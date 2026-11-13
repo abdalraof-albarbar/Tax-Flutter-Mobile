@@ -1,0 +1,42 @@
+name: Private demo delivery
+on:
+  push:
+    tags: ['demo-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-build:
+    uses: ./.github/workflows/flutter.yml
+  private-prerelease:
+    needs: validate-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require a private repository and a commit on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          test "$(gh api repos/$GITHUB_REPOSITORY --jq .private)" = true
+          git fetch origin main --depth=100
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-debug-apk
+          path: delivery
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-preview
+          path: web-preview
+      - run: cd web-preview && zip -r ../delivery/web-preview.zip .
+      - name: Deliver a private review build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" delivery/*
+          --prerelease --title "Tafteesh $GITHUB_REF_NAME"
+          --notes "Demo review build. Debug-signed APK and web preview. No production backend or official submission."
