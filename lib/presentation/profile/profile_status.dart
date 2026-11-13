@@ -3,6 +3,7 @@ import '../../app/profile_scope.dart';
 import '../../core/localization.dart';
 import '../../core/theme.dart';
 import '../widgets/surface.dart';
+import 'profile_recovery_actions.dart';
 
 class ProfileStatus extends StatelessWidget {
   const ProfileStatus({super.key});
@@ -11,6 +12,14 @@ class ProfileStatus extends StatelessWidget {
     final controller = ProfileScope.of(context);
     final error = controller.error;
     final messages = <String, String>{
+      'corrupt': context.tr(
+        'بيانات إعدادات الملف غير قابلة للقراءة. يمكنك استعادة الإعدادات الافتراضية.',
+        'Saved profile data is unreadable. You can restore default settings.',
+      ),
+      'reset': context.tr(
+        'تعذر استعادة الإعدادات الافتراضية. البيانات المحفوظة لم تتغير؛ حاول مجددًا.',
+        'Could not restore defaults. Stored data is unchanged; please retry.',
+      ),
       'load': context.tr(
         'تعذر استعادة الإعدادات. أعد المحاولة قبل التعديل.',
         'Could not restore settings. Retry before editing.',
@@ -35,12 +44,15 @@ class ProfileStatus extends StatelessWidget {
             liveRegion: true,
             child: Notice(messages[error] ?? messages['save']!, warning: true),
           ),
-          if (error == 'load')
+          if (['load', 'corrupt', 'reset'].contains(error))
             TextButton.icon(
-              onPressed: controller.loading ? null : controller.initialize,
+              onPressed: controller.loading || controller.busy
+                  ? null
+                  : controller.initialize,
               icon: const Icon(Icons.refresh_rounded),
               label: Text(context.tr('إعادة المحاولة', 'Retry')),
             ),
+          if (controller.canReset) const ProfileRecoveryActions(),
         ],
       );
     }

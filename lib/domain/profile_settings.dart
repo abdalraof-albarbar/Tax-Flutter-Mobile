@@ -52,6 +52,11 @@ class ProfileSettings {
   }
 }
 
+/// Stored bytes were read successfully, but cannot be decoded as this profile.
+class ProfileDataCorruption implements Exception {
+  const ProfileDataCorruption();
+}
+
 abstract interface class ProfileStore {
   Future<ProfileSettings> load();
   Future<void> save(ProfileSettings settings);

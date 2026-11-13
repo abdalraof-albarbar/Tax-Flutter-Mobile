@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app/app_scope.dart';
+import '../app/profile_scope.dart';
 import '../core/localization.dart';
 import '../core/theme.dart';
 import 'home/home_screen.dart';
@@ -28,6 +29,7 @@ class _InspectorShellState extends State<InspectorShell> {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final profile = ProfileScope.of(context);
     final wide = MediaQuery.sizeOf(context).width >= 600;
     final labels = [
       context.tr('الرئيسية', 'Home'),
@@ -85,16 +87,20 @@ class _InspectorShellState extends State<InspectorShell> {
         actions: [
           TextButton(
             key: const ValueKey('language'),
-            onPressed: () async {
-              final saved = await widget.onToggleLanguage();
-              if (!saved && context.mounted) {
-                showMessage(
-                  context,
-                  'تعذر حفظ اللغة. حاول مجددًا.',
-                  'Could not save language. Please retry.',
-                );
-              }
-            },
+            onPressed: !profile.canEdit
+                ? null
+                : () async {
+                    // A second tap can arrive before the disabled state is painted.
+                    if (!profile.canEdit) return;
+                    final saved = await widget.onToggleLanguage();
+                    if (!saved && profile.error == 'save' && context.mounted) {
+                      showMessage(
+                        context,
+                        'تعذر حفظ اللغة. حاول مجددًا.',
+                        'Could not save language. Please retry.',
+                      );
+                    }
+                  },
             child: Text(context.tr('EN', 'عربي')),
           ),
           IconButton(

@@ -8,7 +8,8 @@ git switch main
 git pull --ff-only
 git switch -c feat/descriptive-name
 flutter pub get --enforce-lockfile
-dart run tool/check_project.dart
+dart tool/check_project.dart
+dart tool/test_project_policy.dart
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze --fatal-infos
 flutter test --coverage --concurrency=1

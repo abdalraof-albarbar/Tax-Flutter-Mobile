@@ -55,10 +55,9 @@ class ProfileHeader extends StatelessWidget {
             const SizedBox(height: Space.md),
             OutlinedButton.icon(
               key: const ValueKey('edit-profile-photo'),
-              onPressed:
-                  profile.loading || profile.busy || profile.error == 'load'
-                  ? null
-                  : () => editProfilePhoto(context),
+              onPressed: profile.canEdit
+                  ? () => editProfilePhoto(context)
+                  : null,
               style: OutlinedButton.styleFrom(
                 foregroundColor: Palette.white,
                 side: const BorderSide(color: Palette.white),

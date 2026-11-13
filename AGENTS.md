@@ -62,7 +62,8 @@ These rules apply to every contribution to this repository.
 Commands (PowerShell, from repository root):
 
 ```powershell
-dart run tool/check_project.dart
+dart tool/check_project.dart
+dart tool/test_project_policy.dart
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage --concurrency=1

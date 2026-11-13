@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:tax_inspector_mobile/core/app_information.dart';
 
 /// No external packages: this policy gate also runs before pub get.
 void main() {
@@ -48,16 +47,28 @@ void main() {
   }
   final pubspec = File('pubspec.yaml').readAsLinesSync();
   final version = pubspec
-      .firstWhere((line) => line.startsWith('version:'))
+      .firstWhere((line) => line.startsWith('version:'), orElse: () => '')
       .split(':')
       .last
       .trim();
-  if (version != AppInformation.version) {
+  final informationFile = File('lib/core/app_information.dart');
+  final displayedVersion = informationFile.existsSync()
+      ? RegExp(
+          r'''static\s+const\s+version\s*=\s*['"]([^'"]+)['"]\s*;''',
+        ).firstMatch(informationFile.readAsStringSync())?.group(1)
+      : null;
+  if (version.isEmpty) violations.add('Missing version: in pubspec.yaml');
+  if (displayedVersion == null) {
+    violations.add(
+      'Missing AppInformation.version in lib/core/app_information.dart',
+    );
+  } else if (version.isNotEmpty && version != displayedVersion) {
     violations.add('pubspec version and AppInformation.version must match');
   }
   final release = File('docs/releases/$version.md');
-  if (!release.existsSync() ||
-      !release.readAsStringSync().contains('```mermaid')) {
+  if (version.isNotEmpty &&
+      (!release.existsSync() ||
+          !release.readAsStringSync().contains('```mermaid'))) {
     violations.add(
       'docs/releases/$version.md must exist with a Mermaid diagram',
     );

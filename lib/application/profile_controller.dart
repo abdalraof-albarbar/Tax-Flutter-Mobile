@@ -9,6 +9,12 @@ class ProfileController extends ChangeNotifier {
   bool loading = true, busy = false;
   bool _restored = false;
   String? error;
+  bool get canEdit => _restored && !loading && !busy;
+  bool get canReset =>
+      !_restored &&
+      !loading &&
+      !busy &&
+      (error == 'corrupt' || error == 'reset');
 
   Future<void> initialize() async {
     loading = true;
@@ -17,11 +23,34 @@ class ProfileController extends ChangeNotifier {
     try {
       settings = await store.load();
       _restored = true;
+    } on ProfileDataCorruption {
+      error = 'corrupt';
+      _restored = false;
     } catch (_) {
       error = 'load';
       _restored = false;
     } finally {
       loading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Called only after the UI confirms replacing the unreadable profile.
+  Future<bool> resetCorruptSettings() async {
+    if (!canReset) return false;
+    busy = true;
+    error = null;
+    notifyListeners();
+    try {
+      final saved = await _persist(const ProfileSettings());
+      if (saved) {
+        _restored = true;
+      } else {
+        error = 'reset';
+      }
+      return saved;
+    } finally {
+      busy = false;
       notifyListeners();
     }
   }
@@ -38,7 +67,7 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<bool> update(ProfileSettings next) async {
-    if (!_restored || busy || loading) return false;
+    if (!canEdit) return false;
     if (!['ar', 'en'].contains(next.language) ||
         ![1.0, 1.15, 1.3].contains(next.textScale) ||
         (next.photo?.length ?? 0) > ProfileSettings.maxPhotoBytes) {
@@ -56,7 +85,7 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<bool> choosePhoto() async {
-    if (!_restored || busy || loading) return false;
+    if (!canEdit) return false;
     busy = true;
     error = null;
     notifyListeners();

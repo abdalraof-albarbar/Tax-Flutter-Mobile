@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:tax_inspector_mobile/application/profile_controller.dart';
@@ -28,6 +29,21 @@ class FakeProfilePicker implements ProfilePhotoPicker {
   Future<Uint8List?> pick() async {
     if (fail) throw StateError('simulated access denied');
     return bytes;
+  }
+}
+
+class DelayedProfileStore extends MemoryProfileStore {
+  Completer<void>? readGate, writeGate;
+  @override
+  Future<ProfileSettings> load() async {
+    await readGate?.future;
+    return super.load();
+  }
+
+  @override
+  Future<void> save(ProfileSettings settings) async {
+    await writeGate?.future;
+    await super.save(settings);
   }
 }
 

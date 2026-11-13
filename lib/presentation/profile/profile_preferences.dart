@@ -10,8 +10,7 @@ class ProfilePreferences extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = ProfileScope.of(context);
     final settings = controller.settings;
-    final enabled =
-        !controller.busy && !controller.loading && controller.error != 'load';
+    final enabled = controller.canEdit;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

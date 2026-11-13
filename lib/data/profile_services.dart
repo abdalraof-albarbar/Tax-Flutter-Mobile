@@ -11,11 +11,16 @@ class LocalProfileStore implements ProfileStore {
   @override
   Future<ProfileSettings> load() async {
     final source = await preferences.getString(key);
-    return source == null
-        ? const ProfileSettings()
-        : ProfileSettings.fromJson(
-            Map<String, dynamic>.from(jsonDecode(source) as Map),
-          );
+    if (source == null) return const ProfileSettings();
+    try {
+      return ProfileSettings.fromJson(
+        Map<String, dynamic>.from(jsonDecode(source) as Map),
+      );
+    } on FormatException {
+      throw const ProfileDataCorruption();
+    } on TypeError {
+      throw const ProfileDataCorruption();
+    }
   }
 
   @override
