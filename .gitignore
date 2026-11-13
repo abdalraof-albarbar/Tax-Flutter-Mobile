@@ -38,6 +38,7 @@ migrate_working_dir/
 playwright.config.json
 *.env
 .env*
+.vercel/
 
 # Symbolication related
 app.*.symbols
@@ -49,3 +50,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.vercel

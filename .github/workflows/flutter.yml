@@ -1,7 +1,6 @@
 name: Flutter CI
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
@@ -27,11 +26,8 @@ jobs:
           channel: stable
           cache: true
       - run: dart run tool/check_project.dart
-      - run: flutter pub get --enforce-lockfile
-      - run: dart format --output=none --set-exit-if-changed lib test tool
-      - run: flutter analyze --fatal-infos
-      - run: flutter test --coverage --concurrency=1
-      - run: flutter build web --no-web-resources-cdn
+      - name: Validate and build the Vercel preview bundle
+        run: bash tool/build_vercel.sh
       - uses: actions/upload-artifact@v4
         with:
           name: web-preview

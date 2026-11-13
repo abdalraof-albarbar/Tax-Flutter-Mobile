@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "true",
+  "buildCommand": "bash tool/build_vercel.sh",
+  "outputDirectory": "build/web",
+  "git": {
+    "deploymentEnabled": {
+      "main": false
+    }
+  },
+  "headers": [
+    {
+      "source": "/(index.html|flutter_bootstrap.js|flutter_service_worker.js|preview-version.json)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
