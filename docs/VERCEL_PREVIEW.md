@@ -23,7 +23,8 @@ project is connected or a deployment succeeded.
 
 1. Use the owner's connected Vercel account. Create/link only the isolated project
    `tax-flutter-mobile-preview` and connect `abdalraof-albarbar/Tax-Flutter-Mobile`.
-2. Keep the repository private. Grant Git access to this repository only.
+2. Preserve the owner's public repository choice (explicit request 2026-11-13).
+   Grant Git access to this repository only; do not publish credentials/runtime data.
 3. Use framework **Other**, repository root `.`, and the committed `vercel.json`.
 4. Keep Vercel's production branch at `main`, but its automatic Git deployment is
    disabled by `vercel.json`. The workflow mirrors successfully tested `main` to
