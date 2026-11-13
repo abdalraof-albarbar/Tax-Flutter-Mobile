@@ -6,6 +6,8 @@ import 'home/home_screen.dart';
 import 'reports/reports_screen.dart';
 import 'visits/visits_screen.dart';
 import 'widgets/surface.dart';
+import 'profile/profile_launcher.dart';
+import 'widgets/feedback.dart';
 
 class InspectorShell extends StatefulWidget {
   const InspectorShell({
@@ -16,7 +18,7 @@ class InspectorShell extends StatefulWidget {
   });
   final int selectedIndex;
   final ValueChanged<int> onSelected;
-  final VoidCallback onToggleLanguage;
+  final Future<bool> Function() onToggleLanguage;
   @override
   State<InspectorShell> createState() => _InspectorShellState();
 }
@@ -79,23 +81,20 @@ class _InspectorShellState extends State<InspectorShell> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: Space.touch + Space.lg,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.tr('تفتيش', 'Tafteesh'),
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(color: Palette.teal),
-            ),
-            if (index > 0)
-              Text(labels[index], style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
+        title: ProfileLauncher(subtitle: index > 0 ? labels[index] : null),
         actions: [
           TextButton(
             key: const ValueKey('language'),
-            onPressed: widget.onToggleLanguage,
+            onPressed: () async {
+              final saved = await widget.onToggleLanguage();
+              if (!saved && context.mounted) {
+                showMessage(
+                  context,
+                  'تعذر حفظ اللغة. حاول مجددًا.',
+                  'Could not save language. Please retry.',
+                );
+              }
+            },
             child: Text(context.tr('EN', 'عربي')),
           ),
           IconButton(
