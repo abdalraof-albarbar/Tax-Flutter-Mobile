@@ -1,8 +1,9 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'theme.dart';
 
 abstract final class ProfileTokens {
-  static const headerHeight = 320.0;
+  static const nameColumnMinWidth = 160.0;
   static const avatarSize = 104.0;
   static const cameraBadge = 32.0;
   static const cameraIcon = 18.0;
@@ -20,6 +21,31 @@ abstract final class ProfileTokens {
 
   static Duration duration(BuildContext context) =>
       MotionTokens.duration(context);
+  static double toolbarHeight(
+    BuildContext context,
+    String title,
+    double width,
+  ) {
+    final painter =
+        TextPainter(
+          text: TextSpan(
+            text: title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          textDirection: Directionality.of(context),
+          locale: Localizations.localeOf(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        )..layout(
+          maxWidth: math.max(
+            Space.touch,
+            width - Space.touch - Space.sm - 2 * Space.lg,
+          ),
+        );
+    final result = math.max(Space.touch + Space.lg, painter.height + Space.md);
+    painter.dispose();
+    return result;
+  }
+
   static AnimationStyle animationStyle(BuildContext context) =>
       MediaQuery.disableAnimationsOf(context)
       ? AnimationStyle.noAnimation
