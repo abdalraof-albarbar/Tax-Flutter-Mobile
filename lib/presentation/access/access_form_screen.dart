@@ -23,7 +23,7 @@ class _AccessFormScreenState extends State<AccessFormScreen> {
   final name = TextEditingController(), email = TextEditingController();
   final password = TextEditingController(),
       confirmation = TextEditingController();
-  bool consent = false, submitted = false;
+  bool consent = false, submitted = false, previewFailed = false;
   bool get signup => widget.intent == AccessIntent.signup;
   bool get recovery => widget.intent == AccessIntent.recovery;
   @override
@@ -38,7 +38,10 @@ class _AccessFormScreenState extends State<AccessFormScreen> {
   Future<void> submit() async {
     final access = AccessScope.of(context);
     if (access.busy) return;
-    setState(() => submitted = true);
+    setState(() {
+      submitted = true;
+      previewFailed = false;
+    });
     if (!form.currentState!.validate() || (signup && !consent)) return;
     FocusScope.of(context).unfocus();
     final success = await access.submit(
@@ -49,7 +52,12 @@ class _AccessFormScreenState extends State<AccessFormScreen> {
         password: password.text,
       ),
     );
-    if (!mounted || !success) return;
+    if (!mounted) return;
+    if (!success) {
+      setState(() => previewFailed = access.failed);
+      return;
+    }
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     name.clear();
     email.clear();
     password.clear();
@@ -163,7 +171,7 @@ class _AccessFormScreenState extends State<AccessFormScreen> {
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
             ],
-            if (submitted && access.failed)
+            if (previewFailed)
               Padding(
                 padding: const EdgeInsets.only(bottom: Space.md),
                 child: Semantics(
@@ -217,8 +225,13 @@ class _AccessFormScreenState extends State<AccessFormScreen> {
               ),
             ),
             TextButton(
-              onPressed: () =>
-                  openAppPage<void>(context, const PrivacyScreen()),
+              key: const ValueKey('access-privacy'),
+              onPressed: access.busy
+                  ? null
+                  : () {
+                      if (access.busy) return;
+                      openAppPage<void>(context, const PrivacyScreen());
+                    },
               child: Text(
                 context.tr('الخصوصية وحدود التجربة', 'Privacy and demo limits'),
               ),
