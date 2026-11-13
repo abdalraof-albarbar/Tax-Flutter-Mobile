@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 import '../app/app_scope.dart';
 import '../app/profile_scope.dart';
 import '../core/localization.dart';
@@ -12,6 +13,7 @@ import 'widgets/feedback.dart';
 import '../app/essentials_scope.dart';
 import '../core/app_page_route.dart';
 import 'essentials/notifications_screen.dart';
+import 'widgets/inspector_navigation.dart';
 
 class InspectorShell extends StatefulWidget {
   const InspectorShell({
@@ -45,6 +47,11 @@ class _InspectorShellState extends State<InspectorShell> {
       Icons.calendar_month_outlined,
       Icons.assignment_outlined,
     ];
+    const selectedIcons = [
+      Icons.home_rounded,
+      Icons.calendar_month_rounded,
+      Icons.assignment_rounded,
+    ];
     final pages = [
       HomeScreen(onShowVisits: () => widget.onSelected(1)),
       const VisitsScreen(),
@@ -73,8 +80,16 @@ class _InspectorShellState extends State<InspectorShell> {
               Expanded(
                 child: IgnorePointer(
                   ignoring: controller.error == 'load',
-                  child: AnimatedSwitcher(
+                  // Adapted from Flutter Authors' BSD-licensed fade-through example.
+                  child: PageTransitionSwitcher(
                     duration: MotionTokens.duration(context),
+                    transitionBuilder: (child, animation, secondaryAnimation) =>
+                        FadeThroughTransition(
+                          fillColor: Palette.background,
+                          animation: animation,
+                          secondaryAnimation: secondaryAnimation,
+                          child: child,
+                        ),
                     child: KeyedSubtree(
                       key: ValueKey(index),
                       child: pages[index],
@@ -149,12 +164,16 @@ class _InspectorShellState extends State<InspectorShell> {
       ),
       bottomNavigationBar: wide
           ? null
-          : NavigationBar(
+          : InspectorNavigation(
               selectedIndex: index,
-              onDestinationSelected: widget.onSelected,
+              onSelected: widget.onSelected,
               destinations: [
                 for (var i = 0; i < labels.length; i++)
-                  NavigationDestination(icon: Icon(icons[i]), label: labels[i]),
+                  NavigationDestination(
+                    icon: Icon(icons[i]),
+                    selectedIcon: Icon(selectedIcons[i]),
+                    label: labels[i],
+                  ),
               ],
             ),
     );

@@ -1,5 +1,15 @@
 # Direct dependencies
 
+## Version 0.5.0
+
+| Package | Exact constraint | Purpose | Platforms / setup |
+|---|---|---|---|
+| `animations` | `2.1.1` | Official ready-made OpenContainer and FadeThroughTransition | All Flutter targets; Dart ^3.8.0, Flutter >=3.32.0; no native setup |
+
+Source is flutter/packages at tag animations-v2.1.1, BSD-3-Clause. See
+[component sources](COMPONENT_SOURCES.md) for the pinned commit and adaptations.
+The newer 3.0.0 requires a newer SDK than this project and is not selected.
+
 ## Version 0.4.0
 
 No new direct, SDK or development dependency. Access forms use native Flutter

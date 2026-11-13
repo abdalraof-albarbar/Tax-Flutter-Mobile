@@ -17,22 +17,22 @@ flutter build web --no-web-resources-cdn
 ```
 
 Every new task uses a new branch and PR. Include validation evidence and known
-limitations. Never push directly to main. Repository settings may require an
-eligible GitHub plan to enforce private-branch protection; these documented
-rules and CI do not by themselves lock main.
+limitations. Never push directly to main. The owner requested public visibility
+on 2026-11-13. These documented rules and CI do not by themselves lock main;
+actual branch-protection settings must be checked separately.
 
 ## CI
 
 `.github/workflows/flutter.yml` runs policy checks, formatting, static analysis,
 regression tests with coverage, a self-contained web build and Android debug APK.
-Artifacts are private to repository access and expire after 14 days. iOS requires
+Artifacts follow GitHub's public-repository access rules and expire after 14 days. iOS requires
 macOS/Xcode and signing; it is not built by this workflow.
 
 ## CD
 
 After an approved PR is merged, an explicitly requested `demo-v*` tag runs the
-same validation/build workflow, checks repository privacy and main ancestry,
-then creates a **private prerelease** with APK and web ZIP. This is internal demo
+same validation/build workflow, checks public visibility and main ancestry,
+then creates a **public prerelease** with APK and web ZIP. This is demo
 delivery. No Play Store, App Store or production keys are configured.
 No release tag is created as part of initial implementation.
 

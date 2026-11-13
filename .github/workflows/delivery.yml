@@ -1,4 +1,4 @@
-name: Private demo delivery
+name: Demo delivery
 on:
   push:
     tags: ['demo-v*']
@@ -9,19 +9,19 @@ permissions:
 jobs:
   validate-and-build:
     uses: ./.github/workflows/flutter.yml
-  private-prerelease:
+  demo-prerelease:
     needs: validate-and-build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Require a private repository and a commit on main
+      - name: Require the approved public repository and a commit on main
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          test "$(gh api repos/$GITHUB_REPOSITORY --jq .private)" = true
+          test "$(gh api repos/$GITHUB_REPOSITORY --jq .private)" = false
           git fetch origin main --depth=100
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main
       - uses: actions/download-artifact@v4
@@ -33,7 +33,7 @@ jobs:
           name: web-preview
           path: web-preview
       - run: cd web-preview && zip -r ../delivery/web-preview.zip .
-      - name: Deliver a private review build
+      - name: Deliver an explicitly requested demo review build
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-

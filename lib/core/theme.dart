@@ -63,7 +63,7 @@ ThemeData buildTheme() {
     fontFamily: family,
     textTheme: text,
     colorScheme: ColorScheme.fromSeed(seedColor: Palette.teal).copyWith(
-      primary: Palette.teal,
+      primary: Palette.deepTeal,
       onPrimary: Palette.white,
       surface: Palette.white,
       onSurface: Palette.ink,
@@ -115,7 +115,23 @@ ThemeData buildTheme() {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Palette.white,
       indicatorColor: Palette.mint,
-      labelTextStyle: WidgetStatePropertyAll(text.labelMedium),
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Space.controlRadius),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? Palette.deepTeal
+              : Palette.muted,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => text.labelMedium?.copyWith(
+          color: states.contains(WidgetState.selected)
+              ? Palette.deepTeal
+              : Palette.muted,
+        ),
+      ),
     ),
   );
 }

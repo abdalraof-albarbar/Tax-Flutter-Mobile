@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/localization.dart';
 import '../../core/theme.dart';
+import '../../core/profile_style.dart';
 import '../../domain/visit.dart';
 import '../widgets/demo_map.dart';
 import '../widgets/feedback.dart';
@@ -8,6 +9,7 @@ import '../widgets/feedback.dart';
 void showRouteSheet(BuildContext context, List<Visit> visits) {
   showModalBottomSheet<void>(
     context: context,
+    sheetAnimationStyle: ProfileTokens.animationStyle(context),
     isScrollControlled: true,
     showDragHandle: true,
     builder: (context) => SafeArea(
