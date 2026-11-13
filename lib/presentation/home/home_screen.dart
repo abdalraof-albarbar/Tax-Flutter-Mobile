@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
             context.tr('أكملت جميع زيارات اليوم', 'All visits completed today'),
           )
         else
-          NextVisitCard(visit: pending.first),
+          NextVisitCard(key: ValueKey(pending.first.id), visit: pending.first),
         const SizedBox(height: Space.xl),
         DashboardShortcuts(visits: today, onShowVisits: onShowVisits),
         const SizedBox(height: Space.lg),

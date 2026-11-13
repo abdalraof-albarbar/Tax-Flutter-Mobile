@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tax_inspector_mobile/app/inspector_app.dart';
 import 'package:tax_inspector_mobile/presentation/home/day_overview.dart';
+import 'package:tax_inspector_mobile/presentation/home/next_visit_card.dart';
 import 'package:tax_inspector_mobile/presentation/widgets/feedback.dart';
 import 'support/fakes.dart';
 import 'support/profile_fakes.dart';
@@ -9,6 +10,33 @@ import 'support/widget_helpers.dart';
 
 void main() {
   setUpAll(loadCairo);
+  testWidgets(
+    'completing the open visit retires its source card before return',
+    (tester) async {
+      setPhone(tester);
+      final controller = makeController();
+      await tester.pumpWidget(InspectorApp(controller: controller));
+      await tester.pumpAndSettle();
+      final cards = find.byType(NextVisitCard, skipOffstage: false);
+      final original = tester.element(cards);
+      final visit = tester.widget<NextVisitCard>(cards).visit;
+      await tapKey(tester, 'next-visit');
+      final inspection = controller.start(visit);
+      completeChecklist(inspection);
+      expect(await controller.save(inspection, submit: true), isTrue);
+      await tester.pumpAndSettle();
+      expect(original.mounted, isFalse);
+      final next = tester.widget<NextVisitCard>(cards).visit;
+      expect(next.id, isNot(visit.id));
+      await tapKey(tester, 'screen-back');
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 1200));
+      await tester.pumpAndSettle();
+      expect(find.text('50%'), findsOneWidget);
+      await tapKey(tester, 'next-visit');
+      expect(find.text(next.name), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets(
     'route shortcut opens a usable sheet immediately with reduced motion',
     (tester) async {
