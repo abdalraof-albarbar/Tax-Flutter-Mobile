@@ -18,6 +18,9 @@ recorded in the lockfile. Review this table whenever adding a package.
 | `flutter_lints` | ^5.0.0 (dev) | Dart lint rules | `flutter analyze --fatal-infos` |
 
 No runtime font-fetching package is needed: Cairo is bundled for offline use.
+Browser QA uses the external `@playwright/cli` tool through `npx` and an installed
+Chrome browser; it is not an app dependency or shipped in the APK. Python's
+already-installed OpenCV was used once to decode the screenshot QR for evidence.
 No geolocation, networking API, authentication or official submission package is
 installed. Opening Maps is explicit user action. The illustrative map uses Canvas.
 
