@@ -1,7 +1,7 @@
 name: tax_inspector_mobile
 description: Arabic-first field inspection demo based on supplied screen designs.
 publish_to: 'none'
-version: 0.3.0
+version: 0.4.0
 
 environment:
   sdk: ^3.9.2
@@ -25,6 +25,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
   fonts:
     - family: Cairo
       fonts:

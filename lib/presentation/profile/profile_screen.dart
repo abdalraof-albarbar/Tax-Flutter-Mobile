@@ -6,6 +6,7 @@ import 'profile_header.dart';
 import 'profile_preferences.dart';
 import 'profile_status.dart';
 import 'profile_privacy.dart';
+import 'profile_support.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -75,6 +76,8 @@ class ProfileScreen extends StatelessWidget {
                           const ProfilePreferences(),
                           const SizedBox(height: Space.xl),
                           const ProfilePrivacy(),
+                          const SizedBox(height: Space.xl),
+                          const ProfileSupport(),
                           const SizedBox(height: Space.xl),
                         ],
                       ),

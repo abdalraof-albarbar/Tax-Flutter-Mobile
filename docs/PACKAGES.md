@@ -1,5 +1,12 @@
 # Direct dependencies
 
+## Version 0.4.0
+
+No new direct, SDK or development dependency. Access forms use native Flutter
+Form/TextFormField, navigation and semantics; support screens use Slivers.
+Two original PNG illustrations were created with the built-in image_gen tool
+and bundled as assets. That generation tool is not an app/runtime dependency.
+
 Target toolchain: Flutter **3.35.4**, Dart **3.9.2**. `pubspec.lock` is committed.
 Versions below are exact constraints from `pubspec.yaml`. Transitive versions are
 recorded in the lockfile. Review this table whenever adding a package.

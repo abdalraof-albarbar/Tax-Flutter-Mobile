@@ -49,6 +49,13 @@ These rules apply to every contribution to this repository.
 - Keep profile samples/options in typed data lists. Use a neutral avatar until
   the inspector selects their own photo. Preserve existing drafts when saving
   preferences; local demo storage is not encrypted or an authenticated account.
+- Keep onboarding steps, help articles and demo notifications in typed lists in
+  `lib/data/essential_samples.dart`. Keep generated-art prompts and provenance in
+  `docs/GENERATED_ASSETS.md`; bundle the final assets in the project.
+- Access screens are an explicit UI preview until a real backend is authorized
+  and integrated. Never claim account creation, authenticated sign-in or email
+  delivery from local form validation. Never persist/log form passwords. Ending
+  the demo must preserve drafts, the selected photo and preferences.
 - Before a PR: run the policy check, formatter, analyzer, regression tests and
   web build. CI must pass; Android debug APK is built and attached by CI.
 - Preserve real user data and unrelated changes. Do not read secrets, commit
