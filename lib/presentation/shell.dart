@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../app/app_scope.dart';
+import '../app/profile_scope.dart';
 import '../core/localization.dart';
 import '../core/theme.dart';
 import 'home/home_screen.dart';
 import 'reports/reports_screen.dart';
 import 'visits/visits_screen.dart';
 import 'widgets/surface.dart';
+import 'profile/profile_launcher.dart';
+import 'widgets/feedback.dart';
 
 class InspectorShell extends StatefulWidget {
   const InspectorShell({
@@ -16,7 +19,7 @@ class InspectorShell extends StatefulWidget {
   });
   final int selectedIndex;
   final ValueChanged<int> onSelected;
-  final VoidCallback onToggleLanguage;
+  final Future<bool> Function() onToggleLanguage;
   @override
   State<InspectorShell> createState() => _InspectorShellState();
 }
@@ -26,6 +29,7 @@ class _InspectorShellState extends State<InspectorShell> {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final profile = ProfileScope.of(context);
     final wide = MediaQuery.sizeOf(context).width >= 600;
     final labels = [
       context.tr('الرئيسية', 'Home'),
@@ -79,23 +83,24 @@ class _InspectorShellState extends State<InspectorShell> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: Space.touch + Space.lg,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.tr('تفتيش', 'Tafteesh'),
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(color: Palette.teal),
-            ),
-            if (index > 0)
-              Text(labels[index], style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
+        title: ProfileLauncher(subtitle: index > 0 ? labels[index] : null),
         actions: [
           TextButton(
             key: const ValueKey('language'),
-            onPressed: widget.onToggleLanguage,
+            onPressed: !profile.canEdit
+                ? null
+                : () async {
+                    // A second tap can arrive before the disabled state is painted.
+                    if (!profile.canEdit) return;
+                    final saved = await widget.onToggleLanguage();
+                    if (!saved && profile.error == 'save' && context.mounted) {
+                      showMessage(
+                        context,
+                        'تعذر حفظ اللغة. حاول مجددًا.',
+                        'Could not save language. Please retry.',
+                      );
+                    }
+                  },
             child: Text(context.tr('EN', 'عربي')),
           ),
           IconButton(

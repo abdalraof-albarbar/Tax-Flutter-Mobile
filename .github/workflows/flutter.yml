@@ -25,7 +25,10 @@ jobs:
           flutter-version: '3.35.4'
           channel: stable
           cache: true
-      - run: dart run tool/check_project.dart
+      - name: SDK-only policy checks before dependency resolution
+        run: |
+          dart tool/check_project.dart
+          dart tool/test_project_policy.dart
       - name: Validate and build the Vercel preview bundle
         run: bash tool/build_vercel.sh
       - uses: actions/upload-artifact@v4
