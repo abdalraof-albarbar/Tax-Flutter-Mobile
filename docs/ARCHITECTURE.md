@@ -45,3 +45,31 @@ actual start/submission times use the injected clock. Completed count is derived
 from records, so the initial progress is 25% (one completed visit out of four).
 The screenshot's 50% label is not used because its list provides only one
 completed record.
+
+## Access and essentials (0.4.0)
+
+`AccessController` depends on the narrow `AccessPreviewService` contract.
+`DemoAccessService` performs no I/O and stores no request. Forms own temporary
+text controllers, validate through pure `AccessValidation`, dispose controllers
+on exit and show an explicit preview result. Successful form validation does not
+start the demo until the user selects Open demo. `main.dart` injects this flow;
+the optional controller lets shell-only widget tests mount the inspection UI.
+This is UI composition, **not an authentication or authorization boundary**.
+Real accounts require a separately designed authenticated session/backend flow.
+
+`EssentialsController` owns a read-only list of notification records and a
+session-only set of read IDs. It never writes drafts or preferences. Onboarding,
+help and notification content live in `lib/data/essential_samples.dart`.
+`AccessScope` and `EssentialsScope` expose injected state to routes. Ending the
+demo pops routes to the root and resets navigation without deleting local data.
+
+```mermaid
+flowchart LR
+  Form[Access forms] --> Validation[Pure field validation]
+  Form --> Controller[AccessController]
+  Controller --> Contract[AccessPreviewService]
+  Contract --> Demo[No-I/O demo adapter]
+  Support[Support screens] --> Essentials[EssentialsController]
+  Lists[Typed essential samples] --> Support
+  Lists --> Essentials
+```
