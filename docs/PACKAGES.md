@@ -21,6 +21,11 @@ No runtime font-fetching package is needed: Cairo is bundled for offline use.
 Browser QA uses the external `@playwright/cli` tool through `npx` and an installed
 Chrome browser; it is not an app dependency or shipped in the APK. Python's
 already-installed OpenCV was used once to decode the screenshot QR for evidence.
+Vercel deployment uses the existing external `vercel` CLI **59.5.0** or the
+connected Vercel app; neither is shipped in the APK. The Vercel builder uses Bash and Git
+to obtain the pinned official Flutter SDK. No new Flutter package is added.
+The preview mirror workflow uses `actions/checkout` v6 pinned to
+`d23441a48e516b6c34aea4fa41551a30e30af803`; it needs no Vercel token in GitHub.
 No geolocation, networking API, authentication or official submission package is
 installed. Opening Maps is explicit user action. The illustrative map uses Canvas.
 

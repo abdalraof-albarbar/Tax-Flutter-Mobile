@@ -32,8 +32,18 @@ macOS/Xcode and signing; it is not built by this workflow.
 After an approved PR is merged, an explicitly requested `demo-v*` tag runs the
 same validation/build workflow, checks repository privacy and main ancestry,
 then creates a **private prerelease** with APK and web ZIP. This is internal demo
-delivery. No Play Store, App Store, hosting deployment or production keys are
-configured. No release tag is created as part of initial implementation.
+delivery. No Play Store, App Store or production keys are configured.
+No release tag is created as part of initial implementation.
+
+## Vercel demo preview
+
+The owner requires an updated Flutter Web preview after every merge into main.
+The merge agent must follow CI/deployment, verify the merged SHA and report its
+preview URL. See [VERCEL_PREVIEW.md](VERCEL_PREVIEW.md) for account activation,
+the pinned Flutter build, native Git integration and version metadata.
+Automatic deployment requires the real Vercel/Git account connection; committing
+configuration alone does not activate it. Preview maintenance is already
+authorized for this isolated demo project. Production promotion remains separate.
 
 ## Regression coverage
 

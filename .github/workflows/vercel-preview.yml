@@ -1,0 +1,47 @@
+name: Update Vercel preview after merge
+
+on:
+  workflow_run:
+    workflows: ['Flutter CI']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-main-preview
+  cancel-in-progress: false
+
+jobs:
+  sync-tested-preview:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Mirror only the current tested main commit
+        env:
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          current_main="$(git rev-parse origin/main)"
+          if [[ "$current_main" != "$TESTED_SHA" ]]; then
+            echo "Skipped superseded CI commit $TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git push origin "$TESTED_SHA:refs/heads/preview"
+          echo "Preview branch advanced to tested main commit $TESTED_SHA." >> "$GITHUB_STEP_SUMMARY"
+          echo "Vercel Git integration now builds the Preview deployment." >> "$GITHUB_STEP_SUMMARY"

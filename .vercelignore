@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+.vercel
+.dart_tool
+build
+coverage
+output
+android
+ios
+.idea
+.playwright
+.playwright-cli
+*.iml
