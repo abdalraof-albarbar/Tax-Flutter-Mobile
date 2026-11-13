@@ -30,8 +30,6 @@ abstract final class Space {
   static const preview = 104.0;
   static const qr = 184.0;
   static const avatar = 44.0;
-  static const profileAvatar = 88.0;
-  static const profileHeader = 360.0;
 }
 
 abstract final class MotionTokens {

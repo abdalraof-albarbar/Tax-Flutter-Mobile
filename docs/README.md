@@ -10,6 +10,7 @@
 | [معاينة Vercel](features/002-vercel-preview.md) | الدمج، CI، النشر وإثبات commit |
 | [ملف المفتش](features/003-inspector-profile.md) | الصورة والإعدادات وSlivers |
 | [إصلاحات مراجعة Qodo](features/004-qodo-review-fixes.md) | الاستعادة وفحص السياسة وزر اللغة |
+| [تحسين تصميم الملف](features/005-profile-design-polish.md) | بطاقة المفتش والاختيارات والحركة |
 | [أنماط الواجهة](UI_PATTERNS.md) | الألوان والحركة والتمرير والوصول |
 | [المعمارية](ARCHITECTURE.md) | العقود وفصل المسؤوليات |
 | [الحزم](PACKAGES.md) | الاعتمادات والمنصات والتراخيص |
