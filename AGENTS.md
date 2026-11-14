@@ -3,6 +3,10 @@
 These rules apply to every contribution to this repository.
 
 - Use Flutter and Dart with clear English names and Arabic-first RTL UI.
+- Keep code simple, readable and easy to understand. Prefer straightforward
+  solutions, clear names and small functions. Avoid unnecessary abstractions,
+  extra layers, clever tricks and overengineering. Add short comments when a
+  decision is not obvious; do not complicate code without a concrete need.
 - Follow SOLID: one responsibility per class; inject repository/service contracts;
   depend on abstractions; keep views separate from business logic and storage.
 - Keep every hand-authored file at **300 lines or fewer**. Split by responsibility.
