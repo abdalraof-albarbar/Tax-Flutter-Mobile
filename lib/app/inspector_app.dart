@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import '../application/inspection_controller.dart';
+import '../application/visit_browser_controller.dart';
+import '../application/report_browser_controller.dart';
 import '../core/theme.dart';
 import '../presentation/shell.dart';
 import 'app_scope.dart';
@@ -33,6 +35,10 @@ class InspectorApp extends StatefulWidget {
 }
 
 class _InspectorAppState extends State<InspectorApp> {
+  late final visitBrowser = VisitBrowserController(
+    scheduleDate: widget.controller.scheduleDate,
+  );
+  late final reportBrowser = ReportBrowserController();
   late final ProfileController profile;
   late final EssentialsController essentials;
   int selectedTab = 0;
@@ -61,13 +67,19 @@ class _InspectorAppState extends State<InspectorApp> {
   void _accessChanged() {
     if (mounted) {
       setState(() {
-        if (!(widget.accessController?.exploring ?? false)) selectedTab = 0;
+        if (!(widget.accessController?.exploring ?? false)) {
+          selectedTab = 0;
+          visitBrowser.reset();
+          reportBrowser.reset();
+        }
       });
     }
   }
 
   @override
   void dispose() {
+    visitBrowser.dispose();
+    reportBrowser.dispose();
     profile.removeListener(_profileChanged);
     widget.accessController?.removeListener(_accessChanged);
     if (widget.essentialsController == null) essentials.dispose();
@@ -113,6 +125,8 @@ class _InspectorAppState extends State<InspectorApp> {
                       !widget.accessController!.exploring
                   ? const WelcomeScreen()
                   : InspectorShell(
+                      visitBrowser: visitBrowser,
+                      reportBrowser: reportBrowser,
                       selectedIndex: selectedTab,
                       onSelected: (index) =>
                           setState(() => selectedTab = index),

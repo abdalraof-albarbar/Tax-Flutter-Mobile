@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/app_scope.dart';
 import '../../core/localization.dart';
+import '../../core/app_page_route.dart';
 import '../../core/theme.dart';
 import '../../domain/visit.dart';
 import '../visits/visit_details_screen.dart';
@@ -14,10 +15,7 @@ class VisitTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => InkWell(
     borderRadius: BorderRadius.circular(Space.controlRadius),
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute<void>(builder: (_) => VisitDetailsScreen(visit: visit)),
-    ),
+    onTap: () => openAppPage<void>(context, VisitDetailsScreen(visit: visit)),
     child: Padding(
       padding: const EdgeInsets.symmetric(vertical: Space.md),
       child: Row(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import '../app/app_scope.dart';
+import '../application/visit_browser_controller.dart';
+import '../application/report_browser_controller.dart';
 import '../app/profile_scope.dart';
 import '../core/localization.dart';
 import '../core/theme.dart';
@@ -21,15 +23,20 @@ class InspectorShell extends StatefulWidget {
     required this.onToggleLanguage,
     required this.selectedIndex,
     required this.onSelected,
+    required this.visitBrowser,
+    required this.reportBrowser,
   });
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final VisitBrowserController visitBrowser;
+  final ReportBrowserController reportBrowser;
   final Future<bool> Function() onToggleLanguage;
   @override
   State<InspectorShell> createState() => _InspectorShellState();
 }
 
 class _InspectorShellState extends State<InspectorShell> {
+  final browsingStorage = PageStorageBucket();
   int get index => widget.selectedIndex;
   @override
   Widget build(BuildContext context) {
@@ -54,8 +61,8 @@ class _InspectorShellState extends State<InspectorShell> {
     ];
     final pages = [
       HomeScreen(onShowVisits: () => widget.onSelected(1)),
-      const VisitsScreen(),
-      const ReportsScreen(),
+      VisitsScreen(browser: widget.visitBrowser),
+      ReportsScreen(browser: widget.reportBrowser),
     ];
     final content = controller.loading
         ? const Center(child: CircularProgressIndicator())
@@ -99,83 +106,91 @@ class _InspectorShellState extends State<InspectorShell> {
               ),
             ],
           );
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: Space.touch + Space.lg,
-        title: ProfileLauncher(subtitle: index > 0 ? labels[index] : null),
-        actions: [
-          TextButton(
-            key: const ValueKey('language'),
-            onPressed: !profile.canEdit
-                ? null
-                : () async {
-                    // A second tap can arrive before the disabled state is painted.
-                    if (!profile.canEdit) return;
-                    final saved = await widget.onToggleLanguage();
-                    if (!saved && profile.error == 'save' && context.mounted) {
-                      showMessage(
-                        context,
-                        'تعذر حفظ اللغة. حاول مجددًا.',
-                        'Could not save language. Please retry.',
-                      );
-                    }
-                  },
-            child: Text(context.tr('EN', 'عربي')),
-          ),
-          IconButton(
-            key: const ValueKey('open-notifications'),
-            tooltip: context.tr('الإشعارات', 'Notifications'),
-            icon: Badge(
-              isLabelVisible: essentials.unreadCount > 0,
-              smallSize: Space.sm,
-              child: const Icon(Icons.notifications_outlined),
+    return PopScope<Object?>(
+      canPop: index == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && index != 0) widget.onSelected(0);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: Space.touch + Space.lg,
+          title: ProfileLauncher(subtitle: index > 0 ? labels[index] : null),
+          actions: [
+            TextButton(
+              key: const ValueKey('language'),
+              onPressed: !profile.canEdit
+                  ? null
+                  : () async {
+                      // A second tap can arrive before the disabled state is painted.
+                      if (!profile.canEdit) return;
+                      final saved = await widget.onToggleLanguage();
+                      if (!saved &&
+                          profile.error == 'save' &&
+                          context.mounted) {
+                        showMessage(
+                          context,
+                          'تعذر حفظ اللغة. حاول مجددًا.',
+                          'Could not save language. Please retry.',
+                        );
+                      }
+                    },
+              child: Text(context.tr('EN', 'عربي')),
             ),
-            onPressed: () =>
-                openAppPage<void>(context, const NotificationsScreen()),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Row(
-          children: [
-            if (wide)
-              NavigationRail(
-                selectedIndex: index,
-                labelType: NavigationRailLabelType.all,
-                onDestinationSelected: widget.onSelected,
-                destinations: [
-                  for (var i = 0; i < labels.length; i++)
-                    NavigationRailDestination(
-                      icon: Icon(icons[i]),
-                      label: Text(labels[i]),
-                    ),
-                ],
+            IconButton(
+              key: const ValueKey('open-notifications'),
+              tooltip: context.tr('الإشعارات', 'Notifications'),
+              icon: Badge(
+                isLabelVisible: essentials.unreadCount > 0,
+                smallSize: Space.sm,
+                child: const Icon(Icons.notifications_outlined),
               ),
-            Expanded(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: Space.content),
-                  child: content,
-                ),
-              ),
+              onPressed: () =>
+                  openAppPage<void>(context, const NotificationsScreen()),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: wide
-          ? null
-          : InspectorNavigation(
-              selectedIndex: index,
-              onSelected: widget.onSelected,
-              destinations: [
-                for (var i = 0; i < labels.length; i++)
-                  NavigationDestination(
-                    icon: Icon(icons[i]),
-                    selectedIcon: Icon(selectedIcons[i]),
-                    label: labels[i],
+        body: SafeArea(
+          child: Row(
+            children: [
+              if (wide)
+                NavigationRail(
+                  selectedIndex: index,
+                  labelType: NavigationRailLabelType.all,
+                  onDestinationSelected: widget.onSelected,
+                  destinations: [
+                    for (var i = 0; i < labels.length; i++)
+                      NavigationRailDestination(
+                        icon: Icon(icons[i]),
+                        label: Text(labels[i]),
+                      ),
+                  ],
+                ),
+              Expanded(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: Space.content),
+                    child: PageStorage(bucket: browsingStorage, child: content),
                   ),
-              ],
-            ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: wide
+            ? null
+            : InspectorNavigation(
+                selectedIndex: index,
+                onSelected: widget.onSelected,
+                destinations: [
+                  for (var i = 0; i < labels.length; i++)
+                    NavigationDestination(
+                      icon: Icon(icons[i]),
+                      selectedIcon: Icon(selectedIcons[i]),
+                      label: labels[i],
+                    ),
+                ],
+              ),
+      ),
     );
   }
 }

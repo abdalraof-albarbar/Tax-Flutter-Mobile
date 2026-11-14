@@ -54,6 +54,10 @@ These rules apply to every contribution to this repository.
   `docs/GENERATED_ASSETS.md`; bundle the final assets in the project.
 - Keep dashboard shortcut labels/actions in the typed list at
   `lib/data/dashboard_options.dart`; derive progress/counts from visit state.
+- Keep visit/report browsing choices in typed lists at `lib/data/browse_options.dart`.
+  Derive business directory entries from existing visit lists; never insert fake
+  reports into local storage to decorate a screen. Retain tab browsing state for
+  the current demo session and keep filter-sheet changes cancellable.
 - Access screens are an explicit UI preview until a real backend is authorized
   and integrated. Never claim account creation, authenticated sign-in or email
   delivery from local form validation. Never persist/log form passwords. Ending
