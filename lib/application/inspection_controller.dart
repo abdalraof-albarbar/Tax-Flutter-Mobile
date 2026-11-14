@@ -65,25 +65,26 @@ class InspectionController extends ChangeNotifier {
     int tab = 0,
   }) {
     final term = query.trim().toLowerCase();
-    return visits.where((v) {
-      final matches = '${v.name} ${v.englishName} ${v.taxNumber}'
-          .toLowerCase()
-          .contains(term);
-      final sameDay = date == null || sameDate(v.date, date);
-      final status = statusOf(v);
-      final inTab = switch (tab) {
-        1 => status != VisitStatus.completed && !v.date.isBefore(scheduleDate),
-        2 => status == VisitStatus.completed,
-        _ => sameDay,
-      };
-      return matches &&
-          inTab &&
-          (area == 'all' || v.area == area) &&
-          (priority == 'all' || (priority == 'high') == v.highPriority);
-    }).toList()..sort((a, b) {
-      final byDate = a.date.compareTo(b.date);
-      return byDate == 0 ? a.time.compareTo(b.time) : byDate;
-    });
+    return visits.where((visit) {
+      if (area != 'all' && visit.area != area) return false;
+      if (priority != 'all' && visit.highPriority != (priority == 'high')) {
+        return false;
+      }
+      if (!_matchesTab(visit, tab, date)) return false;
+      final searchableText =
+          '${visit.name} ${visit.englishName} ${visit.taxNumber}';
+      return searchableText.toLowerCase().contains(term);
+    }).toList()..sort(Visit.compareSchedule);
+  }
+
+  bool _matchesTab(Visit visit, int tab, DateTime? date) {
+    return switch (tab) {
+      1 =>
+        statusOf(visit) != VisitStatus.completed &&
+            !visit.date.isBefore(scheduleDate),
+      2 => statusOf(visit) == VisitStatus.completed,
+      _ => date == null || sameDate(visit.date, date),
+    };
   }
 
   Inspection start(Visit visit) {

@@ -25,6 +25,12 @@ class Visit {
   final int durationMinutes;
   final bool highPriority;
   final VisitStatus status;
+
+  static int compareSchedule(Visit first, Visit second) {
+    final byDate = first.date.compareTo(second.date);
+    if (byDate != 0) return byDate;
+    return first.time.compareTo(second.time);
+  }
 }
 
 class ChecklistItem {

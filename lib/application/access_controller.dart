@@ -7,14 +7,7 @@ class AccessController extends ChangeNotifier {
   bool exploring = false, busy = false, failed = false;
   bool _disposed = false;
   Future<bool> submit(AccessRequest request) async {
-    if (busy) return false;
-    if (!AccessValidation.email(request.email) ||
-        (request.intent != AccessIntent.recovery &&
-            !AccessValidation.password(request.password)) ||
-        (request.intent == AccessIntent.signup &&
-            !AccessValidation.name(request.name))) {
-      return false;
-    }
+    if (busy || !AccessValidation.isValidRequest(request)) return false;
     busy = true;
     failed = false;
     notifyListeners();

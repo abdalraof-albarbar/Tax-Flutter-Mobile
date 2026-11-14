@@ -61,6 +61,11 @@ visits. Screens render these groups and join actual controller reports by visit
 ID; no synthetic report store or backend is introduced. Filter sheets keep
 temporary choices until Apply, while Cancel leaves the current results intact.
 
+Visit.compareSchedule defines the shared date-then-time ordering for visit lists
+and business groups. AccessValidation owns both field and whole-request rules;
+AccessController handles submission state. InspectorApp keeps composition,
+preferences and root-page selection in named methods without extra widget layers.
+
 ## Access and essentials (0.4.0) — implementation
 
 `AccessController` depends on the narrow `AccessPreviewService` contract.

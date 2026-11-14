@@ -12,25 +12,19 @@ class Business {
       groups.putIfAbsent(visit.taxNumber, () => []).add(visit);
     }
     final term = query.trim().toLowerCase();
-    return List.unmodifiable(
-      groups.values
-          .where((items) {
-            return items.any(
-              (v) =>
-                  '${v.name} ${v.englishName} ${v.area} '
-                          '${v.englishArea} ${v.taxNumber}'
-                      .toLowerCase()
-                      .contains(term),
-            );
-          })
-          .map(
-            (items) => Business(
-              [...items]..sort((a, b) {
-                final day = a.date.compareTo(b.date);
-                return day == 0 ? a.time.compareTo(b.time) : day;
-              }),
-            ),
-          ),
-    );
+    final businesses = <Business>[];
+    for (final group in groups.values) {
+      if (!group.any((visit) => _matchesSearch(visit, term))) continue;
+      final scheduledVisits = [...group]..sort(Visit.compareSchedule);
+      businesses.add(Business(scheduledVisits));
+    }
+    return List.unmodifiable(businesses);
+  }
+
+  static bool _matchesSearch(Visit visit, String term) {
+    final searchableText =
+        '${visit.name} ${visit.englishName} ${visit.area} '
+        '${visit.englishArea} ${visit.taxNumber}';
+    return searchableText.toLowerCase().contains(term);
   }
 }
