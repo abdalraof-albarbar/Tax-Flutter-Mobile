@@ -4,6 +4,7 @@ import 'package:tax_inspector_mobile/app/inspector_app.dart';
 import 'package:tax_inspector_mobile/presentation/visits/visits_screen.dart';
 import 'package:tax_inspector_mobile/presentation/visits/visit_schedule_card.dart';
 import 'package:tax_inspector_mobile/presentation/visits/visit_filter_sheet.dart';
+import 'package:tax_inspector_mobile/presentation/visits/visit_filters.dart';
 import 'support/fakes.dart';
 import 'support/profile_fakes.dart';
 import 'support/widget_helpers.dart';
@@ -15,6 +16,41 @@ Future<void> openVisits(WidgetTester tester) async {
 
 void main() {
   setUpAll(loadCairo);
+  testWidgets('Home view all explicitly restores the complete sample day', (
+    tester,
+  ) async {
+    setPhone(tester);
+    await tester.pumpWidget(InspectorApp(controller: makeController()));
+    await tester.pumpAndSettle();
+    await openVisits(tester);
+    await tester.enterText(
+      find.byKey(const ValueKey('visit-search')),
+      'no match',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الرئيسية'));
+    await tester.pumpAndSettle();
+    final all = find.text('عرض الكل');
+    if (all.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(
+        all,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+    }
+    await tester.ensureVisible(all);
+    await tester.pumpAndSettle();
+    await tester.tap(all);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<TextField>(find.byKey(const ValueKey('visit-search')))
+          .controller!
+          .text,
+      isEmpty,
+    );
+    expect(find.text('4 زيارات'), findsOneWidget);
+  });
   testWidgets(
     'reduced motion opens and closes transactional filters immediately',
     (tester) async {
@@ -83,7 +119,7 @@ void main() {
     },
   );
   testWidgets(
-    'visit scrolling resumes at the same position after switching tabs',
+    'vertical and calendar positions remain independent after tab navigation',
     (tester) async {
       setPhone(tester);
       await tester.pumpWidget(InspectorApp(controller: makeController()));
@@ -95,6 +131,18 @@ void main() {
             matching: find.byType(Scrollable),
           )
           .first;
+      final strip = find
+          .descendant(
+            of: find.byType(DateStrip),
+            matching: find.byType(Scrollable),
+          )
+          .first;
+      tester.state<ScrollableState>(strip).position.jumpTo(70);
+      await tester.pumpAndSettle();
+      expect(
+        tester.state<ScrollableState>(strip).position.pixels,
+        closeTo(70, 1),
+      );
       await tester.drag(scroll, const Offset(0, -500));
       await tester.pumpAndSettle();
       final offset = tester.state<ScrollableState>(scroll).position.pixels;
@@ -105,6 +153,10 @@ void main() {
       expect(
         tester.state<ScrollableState>(scroll).position.pixels,
         closeTo(offset, 1),
+      );
+      expect(
+        tester.state<ScrollableState>(strip).position.pixels,
+        closeTo(70, 1),
       );
       expect(tester.takeException(), isNull);
     },

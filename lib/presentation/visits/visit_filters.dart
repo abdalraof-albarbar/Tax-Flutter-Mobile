@@ -76,6 +76,7 @@ class DateStrip extends StatelessWidget {
         SizedBox(
           height: (Space.touch + Space.xxl) * textScale,
           child: ListView.separated(
+            key: const PageStorageKey('visit-date-strip'),
             scrollDirection: Axis.horizontal,
             itemCount: 7,
             separatorBuilder: (_, _) => const SizedBox(width: Space.sm),

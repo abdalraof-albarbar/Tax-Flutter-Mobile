@@ -51,7 +51,9 @@ completed record.
 VisitBrowserController and ReportBrowserController hold session-only search,
 filter and sort state. InspectorApp owns/disposes them and injects them into
 the shell pages; standalone widget previews own their fallback controllers.
-PageStorage preserves each tab's independent scroll position. Ending the demo
+PageStorage preserves each tab's independent scroll position, with a separate
+key for the horizontal date strip. Explicit Home schedule actions reset browsing
+filters; ordinary tab selection keeps them. Ending the demo
 resets browsing choices while preserving drafts, photo and preferences.
 
 Business.fromVisits creates immutable groups by tax number from repository

@@ -60,7 +60,12 @@ class _InspectorShellState extends State<InspectorShell> {
       Icons.assignment_rounded,
     ];
     final pages = [
-      HomeScreen(onShowVisits: () => widget.onSelected(1)),
+      HomeScreen(
+        onShowVisits: () {
+          widget.visitBrowser.reset();
+          widget.onSelected(1);
+        },
+      ),
       VisitsScreen(browser: widget.visitBrowser),
       ReportsScreen(browser: widget.reportBrowser),
     ];
