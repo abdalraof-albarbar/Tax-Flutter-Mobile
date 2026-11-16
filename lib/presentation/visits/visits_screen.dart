@@ -1,122 +1,119 @@
 import 'package:flutter/material.dart';
 import '../../app/app_scope.dart';
+import '../../application/visit_browser_controller.dart';
+import '../../core/app_page_route.dart';
 import '../../core/localization.dart';
+import '../../core/record_count.dart';
 import '../../core/theme.dart';
+import '../../data/browse_options.dart';
 import '../../data/sample_data.dart';
+import '../../domain/browse_choice.dart';
+import '../business/business_directory_screen.dart';
+import '../widgets/browse_choices.dart';
+import '../widgets/browse_empty.dart';
+import '../widgets/browse_header.dart';
+import '../widgets/browse_search.dart';
 import '../widgets/screen_frame.dart';
-import '../widgets/surface.dart';
-import '../widgets/visit_tile.dart';
 import 'route_sheet.dart';
 import 'visit_filters.dart';
+import 'visit_schedule_card.dart';
+import 'visit_filter_sheet.dart';
 
 class VisitsScreen extends StatefulWidget {
-  const VisitsScreen({super.key});
+  const VisitsScreen({super.key, this.browser});
+  final VisitBrowserController? browser;
   @override
   State<VisitsScreen> createState() => _VisitsScreenState();
 }
 
 class _VisitsScreenState extends State<VisitsScreen> {
-  int tab = 0;
-  String query = '', area = 'all', priority = 'all';
-  DateTime date = SampleData.date;
+  late final browser =
+      widget.browser ?? VisitBrowserController(scheduleDate: SampleData.date);
   @override
-  Widget build(BuildContext context) {
-    final controller = AppScope.of(context);
-    final visits = controller.filtered(
-      query: query,
-      area: area,
-      priority: priority,
-      date: date,
-      tab: tab,
-    );
-    return PageBody(
-      children: [
-        SegmentedButton<int>(
-          showSelectedIcon: false,
-          segments: [
-            ButtonSegment(value: 0, label: Text(context.tr('اليوم', 'Today'))),
-            ButtonSegment(
-              value: 1,
-              label: Text(context.tr('القادمة', 'Upcoming')),
+  void dispose() {
+    if (widget.browser == null) browser.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: browser,
+    builder: (context, _) {
+      final visits = browser.results(AppScope.of(context));
+      return PageBody(
+        storageKey: 'visits',
+        children: [
+          BrowseHeader(
+            title: context.tr('زياراتك، بوضوح', 'Your visit schedule'),
+            description: context.tr(
+              'ابحث، رتّب وواصل زيارتك من مكان واحد.',
+              'Find, organise and continue visits in one place.',
             ),
-            ButtonSegment(
-              value: 2,
-              label: Text(context.tr('المكتملة', 'Completed')),
+            icon: Icons.calendar_month_outlined,
+            action: OutlinedButton.icon(
+              key: const ValueKey('open-business-directory'),
+              onPressed: () =>
+                  openAppPage<void>(context, const BusinessDirectoryScreen()),
+              icon: const Icon(Icons.storefront_outlined),
+              label: Text(context.tr('دليل الأنشطة', 'Business directory')),
             ),
-          ],
-          selected: {tab},
-          onSelectionChanged: (values) => setState(() => tab = values.first),
-        ),
-        const SizedBox(height: Space.lg),
-        if (tab == 0) ...[
-          DateStrip(
-            date: date,
-            onChanged: (value) => setState(() => date = value),
+          ),
+          BrowseChoices(
+            id: 'visit-tab',
+            options: BrowseOptions.visitTabs,
+            selected: browser.tab,
+            onSelected: browser.setTab,
           ),
           const SizedBox(height: Space.lg),
-        ],
-        TextField(
-          key: const ValueKey('visit-search'),
-          onChanged: (value) => setState(() => query = value),
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search),
-            hintText: context.tr(
-              'ابحث باسم النشاط أو الرقم الضريبي',
-              'Search business or tax number',
+          BrowseSearch(
+            id: 'visit-search',
+            value: browser.query,
+            label: context.tr('البحث في الزيارات', 'Search visits'),
+            hint: context.tr(
+              'اسم النشاط أو الرقم الضريبي',
+              'Business or tax number',
             ),
+            onChanged: browser.setQuery,
           ),
-        ),
-        const SizedBox(height: Space.md),
-        VisitFilters(
-          area: area,
-          priority: priority,
-          onArea: (value) => setState(() => area = value),
-          onPriority: (value) => setState(() => priority = value),
-        ),
-        SectionTitle(
-          context.tr('زيارات ${tab == 0 ? 'اليوم' : ''}', 'Visits'),
-          action: Text('${visits.length} ${context.tr('زيارات', 'visits')}'),
-        ),
-        if (visits.isEmpty)
-          Surface(
-            child: Column(
-              children: [
-                const IconTile(Icons.event_busy_outlined),
-                const SizedBox(height: Space.md),
-                Text(context.tr('لا توجد زيارات مطابقة', 'No matching visits')),
-                Text(
-                  context.tr(
-                    'جرّب تاريخًا أو تصفية أخرى',
-                    'Try another date or filter',
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          )
-        else
-          Surface(
-            child: Column(
-              children: [
-                for (var i = 0; i < visits.length; i++) ...[
-                  if (i > 0) const Divider(),
-                  VisitTile(visits[i]),
-                ],
-              ],
-            ),
+          const SizedBox(height: Space.lg),
+          if (browser.tab == VisitListTab.today) ...[
+            DateStrip(date: browser.date, onChanged: browser.setDate),
+            const SizedBox(height: Space.lg),
+          ],
+          BrowseResultCount(
+            action: VisitFilterButton(browser: browser),
+            label: RecordCount.visits(context, visits.length),
+            onReset: browser.isFiltered ? browser.reset : null,
           ),
-        const SizedBox(height: Space.lg),
-        Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: FilledButton.icon(
+          if (visits.isEmpty)
+            BrowseEmpty(
+              title: context.tr('لا توجد زيارات مطابقة', 'No matching visits'),
+              description: context.tr(
+                'غيّر البحث أو أعد ضبط التصفية للعودة إلى جدول العينة.',
+                'Change your search or reset filters to return to the sample schedule.',
+              ),
+              icon: Icons.event_busy_outlined,
+              action: context.tr('عرض جدول العينة', 'Show sample schedule'),
+              onAction: browser.reset,
+            ),
+          for (final visit in visits)
+            VisitScheduleCard(
+              visit: visit,
+              showDate: browser.tab != VisitListTab.today,
+            ),
+          const SizedBox(height: Space.md),
+          FilledButton.icon(
+            key: const ValueKey('filtered-route'),
             onPressed: visits.isEmpty
                 ? null
                 : () => showRouteSheet(context, visits),
             icon: const Icon(Icons.map_outlined),
-            label: Text(context.tr('الخريطة', 'Map')),
+            label: Text(
+              context.tr('مسار النتائج على الخريطة', 'Map these visits'),
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
+    },
+  );
 }

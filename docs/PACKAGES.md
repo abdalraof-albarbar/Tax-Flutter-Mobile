@@ -1,5 +1,11 @@
 # Direct dependencies
 
+## Version 0.6.0
+
+No new direct, SDK or development dependency. Browse controls, Slivers, sheets,
+semantics, session state and PageStorage use Flutter's existing SDK. Native
+AppPageRoute and the already pinned animations package handle navigation.
+
 ## Version 0.5.0
 
 | Package | Exact constraint | Purpose | Platforms / setup |

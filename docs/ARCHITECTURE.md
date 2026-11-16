@@ -46,7 +46,22 @@ from records, so the initial progress is 25% (one completed visit out of four).
 The screenshot's 50% label is not used because its list provides only one
 completed record.
 
-## Access and essentials (0.4.0)
+## Browsing and business projection (0.6.0)
+
+VisitBrowserController and ReportBrowserController hold session-only search,
+filter and sort state. InspectorApp owns/disposes them and injects them into
+the shell pages; standalone widget previews own their fallback controllers.
+PageStorage preserves each tab's independent scroll position, with a separate
+key for the horizontal date strip. Explicit Home schedule actions reset browsing
+filters; ordinary tab selection keeps them. Ending the demo
+resets browsing choices while preserving drafts, photo and preferences.
+
+Business.fromVisits creates immutable groups by tax number from repository
+visits. Screens render these groups and join actual controller reports by visit
+ID; no synthetic report store or backend is introduced. Filter sheets keep
+temporary choices until Apply, while Cancel leaves the current results intact.
+
+## Access and essentials (0.4.0) — implementation
 
 `AccessController` depends on the narrow `AccessPreviewService` contract.
 `DemoAccessService` performs no I/O and stores no request. Forms own temporary

@@ -27,6 +27,7 @@ class HomeScreen extends StatelessWidget {
         .where((v) => controller.statusOf(v) != VisitStatus.completed)
         .toList();
     return PageBody(
+      storageKey: 'home',
       children: [
         Text(
           MaterialLocalizations.of(context).formatFullDate(SampleData.date),

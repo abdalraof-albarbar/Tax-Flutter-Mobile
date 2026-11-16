@@ -66,10 +66,12 @@ class ScreenFrame extends StatelessWidget {
 }
 
 class PageBody extends StatelessWidget {
-  const PageBody({super.key, required this.children});
+  const PageBody({super.key, required this.children, this.storageKey});
   final List<Widget> children;
+  final String? storageKey;
   @override
   Widget build(BuildContext context) => CustomScrollView(
+    key: storageKey == null ? null : PageStorageKey(storageKey),
     slivers: [
       SliverPadding(
         padding: const EdgeInsets.all(Space.lg),
