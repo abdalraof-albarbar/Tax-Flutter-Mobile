@@ -9,6 +9,8 @@ import 'data/sample_data.dart';
 import 'domain/inspection_policy.dart';
 import 'application/profile_controller.dart';
 import 'data/profile_services.dart';
+import 'application/access_controller.dart';
+import 'data/demo_access_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,7 @@ void main() {
   runApp(
     InspectorApp(
       controller: controller,
+      accessController: AccessController(service: DemoAccessService()),
       profileController: ProfileController(
         store: LocalProfileStore(SharedPreferencesAsync()),
         photoPicker: GalleryProfilePhotoPicker(ImagePicker()),

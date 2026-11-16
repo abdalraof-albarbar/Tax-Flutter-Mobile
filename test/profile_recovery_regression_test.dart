@@ -95,6 +95,11 @@ void main() {
       expect(profile.settings.language, 'ar');
       expect(preferences.values[LocalProfileStore.key], '{broken');
       preferences.failures.write = false;
+      await tester.drag(
+        find.byKey(const ValueKey('profile-scroll')),
+        const Offset(0, 1200),
+      );
+      await tester.pumpAndSettle();
       await tapKey(tester, 'reset-profile');
       await tapKey(tester, 'confirm-profile-reset');
       expect(profile.error, isNull);

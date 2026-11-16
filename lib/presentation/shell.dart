@@ -9,6 +9,9 @@ import 'visits/visits_screen.dart';
 import 'widgets/surface.dart';
 import 'profile/profile_launcher.dart';
 import 'widgets/feedback.dart';
+import '../app/essentials_scope.dart';
+import '../core/app_page_route.dart';
+import 'essentials/notifications_screen.dart';
 
 class InspectorShell extends StatefulWidget {
   const InspectorShell({
@@ -30,6 +33,7 @@ class _InspectorShellState extends State<InspectorShell> {
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
     final profile = ProfileScope.of(context);
+    final essentials = EssentialsScope.of(context);
     final wide = MediaQuery.sizeOf(context).width >= 600;
     final labels = [
       context.tr('الرئيسية', 'Home'),
@@ -104,29 +108,15 @@ class _InspectorShellState extends State<InspectorShell> {
             child: Text(context.tr('EN', 'عربي')),
           ),
           IconButton(
+            key: const ValueKey('open-notifications'),
             tooltip: context.tr('الإشعارات', 'Notifications'),
-            icon: const Badge(
+            icon: Badge(
+              isLabelVisible: essentials.unreadCount > 0,
               smallSize: Space.sm,
-              child: Icon(Icons.notifications_outlined),
+              child: const Icon(Icons.notifications_outlined),
             ),
-            onPressed: () => showDialog<void>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text(context.tr('الإشعارات', 'Notifications')),
-                content: Text(
-                  context.tr(
-                    'لا توجد إشعارات جديدة في النسخة التجريبية.',
-                    'No new notifications in this demo.',
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(context.tr('حسنًا', 'OK')),
-                  ),
-                ],
-              ),
-            ),
+            onPressed: () =>
+                openAppPage<void>(context, const NotificationsScreen()),
           ),
         ],
       ),
