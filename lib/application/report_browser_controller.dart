@@ -30,7 +30,8 @@ class ReportBrowserController extends ChangeNotifier {
           final visit = inspections.visitFor(report.visitId);
           final matches =
               '${visit.name} ${visit.englishName} ${visit.taxNumber} '
-                      '${report.reportNumber}'
+                      '${report.reportNumber} #${report.reportNumber} '
+                      'DEMO-V-${report.reportNumber}'
                   .toLowerCase()
                   .contains(term);
           return matches &&
