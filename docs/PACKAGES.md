@@ -21,6 +21,10 @@ No runtime font-fetching package is needed: Cairo is bundled for offline use.
 Version 0.2.0 adds **no packages**: SliverAppBar, SliverList, Hero and
 FadeTransition are built into Flutter. The profile photo uses the existing
 gallery picker (640px request, quality 80, maximum 512 KB after selection).
+Version 0.3.0 also adds **no packages**: AnimatedAlign and AnimatedScale,
+native InkWell keyboard/focus feedback, Hero and a PageRouteBuilder subclass
+implement the profile polish. Cairo remains bundled; no runtime font fetch,
+new state-management package, animation asset or image dependency is introduced.
 Browser QA uses the external `@playwright/cli` tool through `npx` and an installed
 Chrome browser; it is not an app dependency or shipped in the APK. Python's
 already-installed OpenCV was used once to decode the screenshot QR for evidence.

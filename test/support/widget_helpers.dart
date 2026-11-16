@@ -57,6 +57,7 @@ Future<void> tapKey(WidgetTester tester, String key) async {
     );
   }
   await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();
 }

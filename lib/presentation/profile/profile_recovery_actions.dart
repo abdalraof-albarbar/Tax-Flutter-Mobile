@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/profile_scope.dart';
 import '../../core/localization.dart';
+import '../../core/profile_style.dart';
 
 class ProfileRecoveryActions extends StatelessWidget {
   const ProfileRecoveryActions({super.key});
@@ -17,6 +18,7 @@ class ProfileRecoveryActions extends StatelessWidget {
           ? () async {
               final confirmed = await showDialog<bool>(
                 context: context,
+                animationStyle: ProfileTokens.animationStyle(context),
                 builder: (context) => AlertDialog(
                   title: Text(
                     context.tr(

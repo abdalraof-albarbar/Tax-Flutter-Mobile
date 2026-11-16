@@ -91,10 +91,9 @@ void main() {
       await tapKey(tester, 'confirm-profile-reset');
       expect(profile.error, 'reset');
       expect(preferences.values[LocalProfileStore.key], '{broken');
-      final choice = tester.widget<ChoiceChip>(
-        find.byKey(const ValueKey('profile-language-en')),
-      );
-      expect(choice.onSelected, isNull);
+      await tapKey(tester, 'profile-language-en');
+      expect(profile.settings.language, 'ar');
+      expect(preferences.values[LocalProfileStore.key], '{broken');
       preferences.failures.write = false;
       await tapKey(tester, 'reset-profile');
       await tapKey(tester, 'confirm-profile-reset');

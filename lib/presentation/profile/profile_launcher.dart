@@ -3,7 +3,7 @@ import '../../app/profile_scope.dart';
 import '../../core/localization.dart';
 import '../../core/theme.dart';
 import 'inspector_avatar.dart';
-import 'profile_screen.dart';
+import 'profile_page_route.dart';
 
 class ProfileLauncher extends StatelessWidget {
   const ProfileLauncher({super.key, this.subtitle});
@@ -18,17 +18,8 @@ class ProfileLauncher extends StatelessWidget {
         padding: EdgeInsets.zero,
         onPressed: () => Navigator.push(
           context,
-          PageRouteBuilder<void>(
-            transitionDuration: MotionTokens.duration(context),
-            reverseTransitionDuration: MotionTokens.duration(context),
-            pageBuilder: (_, _, _) => const ProfileScreen(),
-            transitionsBuilder: (_, animation, _, child) => FadeTransition(
-              opacity: CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOut,
-              ),
-              child: child,
-            ),
+          ProfilePageRoute(
+            reduceMotion: MediaQuery.disableAnimationsOf(context),
           ),
         ),
         icon: InspectorAvatar(

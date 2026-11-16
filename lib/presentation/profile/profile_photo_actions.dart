@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../../app/profile_scope.dart';
 import '../../core/localization.dart';
 import '../../core/theme.dart';
+import '../../core/profile_style.dart';
 
 Future<void> editProfilePhoto(BuildContext context) async {
   final controller = ProfileScope.of(context);
   final action = await showModalBottomSheet<String>(
     context: context,
     showDragHandle: true,
+    sheetAnimationStyle: ProfileTokens.animationStyle(context),
     builder: (context) => SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(bottom: Space.lg),
