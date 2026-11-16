@@ -70,7 +70,8 @@ Screenshots are viewport captures; lower sections can require scrolling.
 - iOS build, signing, device permissions, TalkBack/VoiceOver and performance.
 - PDF rendering inside the app, production launcher artwork, secure transactional
   storage, authentication, API, real GPS and official submission/review.
-- CD private prerelease delivery is configured but not invoked; no release tag,
+- CD public demo prerelease delivery is configured following the owner's
+  2026-11-13 visibility request, but has not been invoked; no release tag,
   store upload or hosted deployment was created.
 
 See the PR's current [Actions results](https://github.com/abdalraof-albarbar/Tax-Flutter-Mobile/actions)

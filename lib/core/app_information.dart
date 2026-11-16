@@ -1,3 +1,3 @@
 abstract final class AppInformation {
-  static const version = '0.4.0';
+  static const version = '0.5.0';
 }

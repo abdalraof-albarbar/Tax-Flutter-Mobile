@@ -1,7 +1,7 @@
 name: tax_inspector_mobile
 description: Arabic-first field inspection demo based on supplied screen designs.
 publish_to: 'none'
-version: 0.4.0
+version: 0.5.0
 
 environment:
   sdk: ^3.9.2
@@ -17,6 +17,7 @@ dependencies:
   qr_flutter: 4.1.0
   url_launcher: 6.3.2
   cupertino_icons: 1.0.8
+  animations: 2.1.1
 
 dev_dependencies:
   flutter_test:

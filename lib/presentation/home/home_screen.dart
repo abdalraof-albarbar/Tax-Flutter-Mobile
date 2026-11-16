@@ -4,13 +4,14 @@ import '../../core/localization.dart';
 import '../../core/theme.dart';
 import '../../data/sample_data.dart';
 import '../../domain/visit.dart';
-import '../visits/visit_details_screen.dart';
 import '../visits/route_sheet.dart';
 import '../widgets/demo_map.dart';
 import '../widgets/screen_frame.dart';
-import '../widgets/status_badge.dart';
 import '../widgets/surface.dart';
 import '../widgets/visit_tile.dart';
+import 'day_overview.dart';
+import 'next_visit_card.dart';
+import 'dashboard_shortcuts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.onShowVisits});
@@ -25,15 +26,11 @@ class HomeScreen extends StatelessWidget {
     final pending = today
         .where((v) => controller.statusOf(v) != VisitStatus.completed)
         .toList();
-    final progress = today.isEmpty ? 0.0 : completed / today.length;
     return PageBody(
       children: [
-        Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: Text(
-            MaterialLocalizations.of(context).formatFullDate(SampleData.date),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+        Text(
+          MaterialLocalizations.of(context).formatFullDate(SampleData.date),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: Space.md),
         Text(
@@ -53,63 +50,17 @@ class HomeScreen extends StatelessWidget {
           ).textTheme.bodyLarge?.copyWith(color: Palette.muted),
         ),
         const SizedBox(height: Space.xl),
-        Surface(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.tr(
-                        'أنجزت $completed من ${today.length} زيارات',
-                        '$completed of ${today.length} visits completed',
-                      ),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: Space.lg),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Space.controlRadius),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: Space.sm,
-                        backgroundColor: Palette.border,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: Space.xl),
-              SizedBox(
-                width: Space.touch + Space.lg,
-                height: Space.touch + Space.lg,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox.expand(
-                      child: CircularProgressIndicator(
-                        value: progress,
-                        strokeWidth: Space.sm,
-                        backgroundColor: Palette.border,
-                      ),
-                    ),
-                    Text(
-                      '${(progress * 100).round()}%',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+        DayOverview(completed: completed, total: today.length),
         SectionTitle(context.tr('الزيارة القادمة', 'Next visit')),
         if (pending.isEmpty)
           Notice(
             context.tr('أكملت جميع زيارات اليوم', 'All visits completed today'),
           )
         else
-          _NextVisit(pending.first),
+          NextVisitCard(key: ValueKey(pending.first.id), visit: pending.first),
+        const SizedBox(height: Space.xl),
+        DashboardShortcuts(visits: today, onShowVisits: onShowVisits),
+        const SizedBox(height: Space.lg),
         SectionTitle(
           context.tr('جدول اليوم', 'Today’s schedule'),
           action: TextButton(
@@ -147,7 +98,10 @@ class HomeScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
-                    const Icon(Icons.chevron_left, color: Palette.teal),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Palette.teal,
+                    ),
                   ],
                 ),
                 const SizedBox(height: Space.md),
@@ -159,53 +113,4 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
-}
-
-class _NextVisit extends StatelessWidget {
-  const _NextVisit(this.visit);
-  final Visit visit;
-  @override
-  Widget build(BuildContext context) => Surface(
-    color: Palette.mint,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            const IconTile(Icons.apartment_outlined),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Text(
-                context.tr(visit.name, visit.englishName),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: Space.md),
-        Wrap(
-          spacing: Space.sm,
-          runSpacing: Space.sm,
-          children: [
-            if (visit.highPriority) const StatusBadge(priority: true),
-            Text(
-              '${visit.time}  •  ${context.tr(visit.area, visit.englishArea)}',
-            ),
-          ],
-        ),
-        const SizedBox(height: Space.lg),
-        FilledButton.icon(
-          key: const ValueKey('next-visit'),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => VisitDetailsScreen(visit: visit),
-            ),
-          ),
-          icon: const Icon(Icons.arrow_forward),
-          label: Text(context.tr('عرض الزيارة', 'View visit')),
-        ),
-      ],
-    ),
-  );
 }
