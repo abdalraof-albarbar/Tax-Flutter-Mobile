@@ -17,6 +17,13 @@ abstract interface class AccessPreviewService {
 }
 
 abstract final class AccessValidation {
+  static bool isValidRequest(AccessRequest request) {
+    if (!email(request.email)) return false;
+    if (request.intent == AccessIntent.recovery) return true;
+    if (!password(request.password)) return false;
+    return request.intent != AccessIntent.signup || name(request.name);
+  }
+
   static bool email(String value) =>
       value.trim().length <= 254 &&
       RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());

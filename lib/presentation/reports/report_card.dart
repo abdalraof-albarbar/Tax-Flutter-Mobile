@@ -13,6 +13,17 @@ import 'report_details_screen.dart';
 class ReportCard extends StatelessWidget {
   const ReportCard({super.key, required this.inspection});
   final Inspection inspection;
+
+  String _statusLabel(BuildContext context) {
+    if (inspection.submitted) {
+      return context.tr('قيد المراجعة • تجريبي', 'Under review • Demo');
+    }
+    if (inspection.savedAt == null) {
+      return context.tr('مسودة غير محفوظة', 'Unsaved draft');
+    }
+    return context.tr('مسودة', 'Draft');
+  }
+
   @override
   Widget build(BuildContext context) {
     final visit = AppScope.of(context).visitFor(inspection.visitId);
@@ -48,12 +59,7 @@ class ReportCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      inspection.submitted
-                          ? context.tr(
-                              'قيد المراجعة • تجريبي',
-                              'Under review • Demo',
-                            )
-                          : context.tr('مسودة', 'Draft'),
+                      _statusLabel(context),
                       style: Theme.of(
                         context,
                       ).textTheme.labelLarge?.copyWith(color: Palette.deepTeal),

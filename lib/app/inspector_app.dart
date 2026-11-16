@@ -65,15 +65,61 @@ class _InspectorAppState extends State<InspectorApp> {
   }
 
   void _accessChanged() {
-    if (mounted) {
-      setState(() {
-        if (!(widget.accessController?.exploring ?? false)) {
-          selectedTab = 0;
-          visitBrowser.reset();
-          reportBrowser.reset();
-        }
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      if (widget.accessController?.exploring ?? false) return;
+      selectedTab = 0;
+      visitBrowser.reset();
+      reportBrowser.reset();
+    });
+  }
+
+  void _selectTab(int index) => setState(() => selectedTab = index);
+
+  Future<bool> _toggleLanguage() => profile.update(
+    profile.settings.copyWith(
+      language: profile.settings.language == 'ar' ? 'en' : 'ar',
+    ),
+  );
+
+  Widget _applyPreferences(BuildContext context, Widget? child) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: PreferenceTextScaler(
+          media.textScaler,
+          profile.settings.textScale,
+        ),
+        disableAnimations:
+            media.disableAnimations || profile.settings.reduceMotion,
+      ),
+      child: child!,
+    );
+  }
+
+  Widget _buildHome() {
+    final access = widget.accessController;
+    if (access != null && !access.exploring) return const WelcomeScreen();
+    return InspectorShell(
+      visitBrowser: visitBrowser,
+      reportBrowser: reportBrowser,
+      selectedIndex: selectedTab,
+      onSelected: _selectTab,
+      onToggleLanguage: _toggleLanguage,
+    );
+  }
+
+  Widget _buildMaterialApp() {
+    return MaterialApp(
+      title: 'تفتيش | Inspection',
+      debugShowCheckedModeBanner: false,
+      theme: buildTheme(),
+      locale: Locale(profile.settings.language),
+      supportedLocales: const [Locale('ar'), Locale('en')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      builder: _applyPreferences,
+      home: _buildHome(),
+    );
   }
 
   @override
@@ -97,48 +143,8 @@ class _InspectorAppState extends State<InspectorApp> {
         child: EssentialsScope(
           controller: essentials,
           child: NavigationScope(
-            selectTab: (index) => setState(() => selectedTab = index),
-            child: MaterialApp(
-              title: 'تفتيش | Inspection',
-              debugShowCheckedModeBanner: false,
-              theme: buildTheme(),
-              locale: Locale(profile.settings.language),
-              supportedLocales: const [Locale('ar'), Locale('en')],
-              localizationsDelegates: GlobalMaterialLocalizations.delegates,
-              builder: (context, child) {
-                final media = MediaQuery.of(context);
-                return MediaQuery(
-                  data: media.copyWith(
-                    textScaler: PreferenceTextScaler(
-                      media.textScaler,
-                      profile.settings.textScale,
-                    ),
-                    disableAnimations:
-                        media.disableAnimations ||
-                        profile.settings.reduceMotion,
-                  ),
-                  child: child!,
-                );
-              },
-              home:
-                  widget.accessController != null &&
-                      !widget.accessController!.exploring
-                  ? const WelcomeScreen()
-                  : InspectorShell(
-                      visitBrowser: visitBrowser,
-                      reportBrowser: reportBrowser,
-                      selectedIndex: selectedTab,
-                      onSelected: (index) =>
-                          setState(() => selectedTab = index),
-                      onToggleLanguage: () => profile.update(
-                        profile.settings.copyWith(
-                          language: profile.settings.language == 'ar'
-                              ? 'en'
-                              : 'ar',
-                        ),
-                      ),
-                    ),
-            ),
+            selectTab: _selectTab,
+            child: _buildMaterialApp(),
           ),
         ),
       ),

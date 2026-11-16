@@ -83,11 +83,11 @@ class VisitBrowserController extends ChangeNotifier {
       tab: tab.index,
     );
     if (order == VisitOrder.priority) {
-      visits.sort((a, b) {
-        final priority = (b.highPriority ? 1 : 0) - (a.highPriority ? 1 : 0);
-        if (priority != 0) return priority;
-        final day = a.date.compareTo(b.date);
-        return day == 0 ? a.time.compareTo(b.time) : day;
+      visits.sort((first, second) {
+        if (first.highPriority != second.highPriority) {
+          return first.highPriority ? -1 : 1;
+        }
+        return Visit.compareSchedule(first, second);
       });
     }
     return List.unmodifiable(visits);

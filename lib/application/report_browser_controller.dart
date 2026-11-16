@@ -25,21 +25,22 @@ class ReportBrowserController extends ChangeNotifier {
 
   List<Inspection> results(InspectionController inspections) {
     final term = query.trim().toLowerCase();
-    return inspections.reports.reversed
-        .where((report) {
-          final visit = inspections.visitFor(report.visitId);
-          final matches =
-              '${visit.name} ${visit.englishName} ${visit.taxNumber} '
-                      '${report.reportNumber}'
-                  .toLowerCase()
-                  .contains(term);
-          return matches &&
-              switch (filter) {
-                ReportListFilter.all => true,
-                ReportListFilter.drafts => !report.submitted,
-                ReportListFilter.review => report.submitted,
-              };
-        })
-        .toList(growable: false);
+    final results = <Inspection>[];
+    for (final report in inspections.reports.reversed) {
+      if (!_matchesFilter(report)) continue;
+      final visit = inspections.visitFor(report.visitId);
+      final searchableText =
+          '${visit.name} ${visit.englishName} ${visit.taxNumber} '
+          '${report.reportNumber} #${report.reportNumber} '
+          'DEMO-V-${report.reportNumber}';
+      if (searchableText.toLowerCase().contains(term)) results.add(report);
+    }
+    return results.toList(growable: false);
   }
+
+  bool _matchesFilter(Inspection report) => switch (filter) {
+    ReportListFilter.all => true,
+    ReportListFilter.drafts => !report.submitted,
+    ReportListFilter.review => report.submitted,
+  };
 }
