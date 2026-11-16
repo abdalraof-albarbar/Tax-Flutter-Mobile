@@ -7,6 +7,8 @@ import 'data/device_services.dart';
 import 'data/local_draft_store.dart';
 import 'data/sample_data.dart';
 import 'domain/inspection_policy.dart';
+import 'application/profile_controller.dart';
+import 'data/profile_services.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,5 +23,13 @@ void main() {
       violations: SampleData.violations,
     ),
   );
-  runApp(InspectorApp(controller: controller));
+  runApp(
+    InspectorApp(
+      controller: controller,
+      profileController: ProfileController(
+        store: LocalProfileStore(SharedPreferencesAsync()),
+        photoPicker: GalleryProfilePhotoPicker(ImagePicker()),
+      ),
+    ),
+  );
 }

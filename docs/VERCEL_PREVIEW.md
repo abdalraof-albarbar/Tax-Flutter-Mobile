@@ -29,8 +29,8 @@ project is connected or a deployment succeeded.
    disabled by `vercel.json`. The workflow mirrors successfully tested `main` to
    `preview`, which Vercel deploys as Preview with a stable branch URL. Do not
    promote a deployment to production merely to refresh a demo preview.
-5. Import/deploy the feature branch for the initial screen preview if the screen
-   PR is not merged yet. This configuration PR is stacked on the screen branch.
+5. Use the feature branch's separate Preview URL to review work before merging.
+   Keep the stable preview domain assigned to the `preview` mirror branch.
 6. Record the real project ID, team and returned preview URL after linking. Do
    not invent a domain or treat an unclaimed fallback deployment as account-linked.
 
@@ -70,9 +70,16 @@ in chat. Do not modify unrelated Vercel projects, domains or production services
 - Vercel Git connection confirmed to `abdalraof-albarbar/Tax-Flutter-Mobile`.
 - [Project dashboard](https://vercel.com/technologyet31-creates-projects/tax-flutter-mobile-preview).
 - Automatic production-domain assignment is disabled for this isolated project.
-- The initial deployment URL and READY result are recorded in the setup PR.
-  Merge-triggered synchronization becomes active when this configuration reaches
-  `main`; an actual merge event has not been simulated by merging unapproved work.
+- PR #1 and PR #2 were merged with explicit user approval after their checks.
+- Main CI run `43365014088` and mirror run `43366377624` both succeeded.
+- The mirror automatically fast-forwarded `preview` to tested main
+  `e76c4e373961e70b00f6200c9c95edadd82ddd4d`.
+- Vercel automatically built deployment `dpl_Bxj12aWdsfbFULF5vqureY9ckKWL`,
+  `tax-flutter-mobile-preview-e13bhbzfn.vercel.app`: **READY, target Preview**.
+- The stable domain `tax-flutter-mobile-preview.vercel.app` automatically points
+  at that deployment. Authenticated `vercel curl` returned HTTP 200 HTML and
+  `preview-version.json` with the exact SHA above, branch `preview`, version
+  `0.1.0`, built at `2026-11-13T04:36:28.126885Z`.
 
-This setup does not authorize merging the open screen PR. A configured Git
-connection alone is not evidence that a particular deployment succeeded.
+New feature PRs need their own merge approval. The profile/settings feature is
+reviewed separately; this main preview evidence does not include unmerged work.

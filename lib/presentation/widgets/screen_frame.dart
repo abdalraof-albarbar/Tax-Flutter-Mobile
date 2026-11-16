@@ -69,20 +69,26 @@ class PageBody extends StatelessWidget {
   const PageBody({super.key, required this.children});
   final List<Widget> children;
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(Space.lg),
-    children: [
-      ...children,
-      const SizedBox(height: Space.xl),
-      Text(
-        context.tr(
-          'تصميم تجريبي • بيانات نموذجية',
-          'Demo design • Sample data',
+  Widget build(BuildContext context) => CustomScrollView(
+    slivers: [
+      SliverPadding(
+        padding: const EdgeInsets.all(Space.lg),
+        sliver: SliverList.list(
+          children: [
+            ...children,
+            const SizedBox(height: Space.xl),
+            Text(
+              context.tr(
+                'تصميم تجريبي • بيانات نموذجية',
+                'Demo design • Sample data',
+              ),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: Space.xl),
+          ],
         ),
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall,
       ),
-      const SizedBox(height: Space.xl),
     ],
   );
 }

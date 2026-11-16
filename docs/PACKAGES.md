@@ -9,8 +9,8 @@ recorded in the lockfile. Review this table whenever adding a package.
 | `flutter` | Flutter SDK | Material 3, navigation, animation, ChangeNotifier | Android, iOS, web; no external state/router library needed |
 | `flutter_localizations` | Flutter SDK | Arabic RTL and English Material controls and dates | App locale toggle; SDK delegates |
 | `cupertino_icons` | 1.0.8 | Native iOS navigation icon fallback referenced by Flutter | Bundled icon font; prevents missing-font warnings on build |
-| `shared_preferences` | 2.5.3 | Local JSON draft store behind `DraftStore` | Android/iOS/web; use `SharedPreferencesAsync`; not secure or critical-data storage |
-| `image_picker` | 1.2.0 | Camera and gallery behind `AttachmentService` | Android 24+; iOS camera/photo usage strings in Info.plist; browser capture is device-dependent |
+| `shared_preferences` | 2.5.3 | Local JSON drafts and separate profile preferences behind store contracts | Android/iOS/web; use `SharedPreferencesAsync`; not secure or critical-data storage |
+| `image_picker` | 1.2.0 | Inspection attachments and inspector gallery photo behind picker contracts | Android 24+; iOS camera/photo usage strings in Info.plist; browser capture is device-dependent |
 | `file_picker` | 10.3.3 | Read PDF attachments as bytes | Android/iOS/web native file selection; 2 MB per file, 6 attachments per report |
 | `qr_flutter` | 4.1.0 | Real offline QR rendering for local demo report ID | Android/iOS/web; contains no personal data, URL or official verification endpoint |
 | `url_launcher` | 6.3.2 | External Google Maps directions for sample coordinates | Android/iOS/web; requires a compatible external app/browser; failures shown to user |
@@ -18,6 +18,9 @@ recorded in the lockfile. Review this table whenever adding a package.
 | `flutter_lints` | ^5.0.0 (dev) | Dart lint rules | `flutter analyze --fatal-infos` |
 
 No runtime font-fetching package is needed: Cairo is bundled for offline use.
+Version 0.2.0 adds **no packages**: SliverAppBar, SliverList, Hero and
+FadeTransition are built into Flutter. The profile photo uses the existing
+gallery picker (640px request, quality 80, maximum 512 KB after selection).
 Browser QA uses the external `@playwright/cli` tool through `npx` and an installed
 Chrome browser; it is not an app dependency or shipped in the APK. Python's
 already-installed OpenCV was used once to decode the screenshot QR for evidence.

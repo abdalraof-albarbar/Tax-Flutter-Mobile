@@ -39,6 +39,16 @@ These rules apply to every contribution to this repository.
   reported explicitly; prepared config alone is not a live deployment.
 - Add regression tests for changed behavior and bugs, including state transitions,
   validation, filtering, persistence and navigation when relevant.
+- Document every feature in its own Markdown file under `docs/features/`, with
+  behavior, limitations, validation evidence and Mermaid diagrams of its flow
+  and/or architecture. Document every version under `docs/releases/<version>.md`
+  with a diagram and links to its feature notes; update `docs/CHANGELOG.md`.
+- Record UI patterns and motion decisions in `docs/UI_PATTERNS.md`. Prefer native
+  Flutter Slivers for coordinated scrolling, shared theme tokens, accessible
+  controls and motion that honors both system and in-app reduced-motion settings.
+- Keep profile samples/options in typed data lists. Use a neutral avatar until
+  the inspector selects their own photo. Preserve existing drafts when saving
+  preferences; local demo storage is not encrypted or an authenticated account.
 - Before a PR: run the policy check, formatter, analyzer, regression tests and
   web build. CI must pass; Android debug APK is built and attached by CI.
 - Preserve real user data and unrelated changes. Do not read secrets, commit
@@ -52,7 +62,8 @@ These rules apply to every contribution to this repository.
 Commands (PowerShell, from repository root):
 
 ```powershell
-dart run tool/check_project.dart
+dart tool/check_project.dart
+dart tool/test_project_policy.dart
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage --concurrency=1
