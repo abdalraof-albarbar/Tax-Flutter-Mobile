@@ -31,7 +31,8 @@ class ReportBrowserController extends ChangeNotifier {
       final visit = inspections.visitFor(report.visitId);
       final searchableText =
           '${visit.name} ${visit.englishName} ${visit.taxNumber} '
-          '${report.reportNumber}';
+          '${report.reportNumber} #${report.reportNumber} '
+          'DEMO-V-${report.reportNumber}';
       if (searchableText.toLowerCase().contains(term)) results.add(report);
     }
     return results.toList(growable: false);

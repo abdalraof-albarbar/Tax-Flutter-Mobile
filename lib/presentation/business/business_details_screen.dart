@@ -64,17 +64,12 @@ class BusinessDetailsScreen extends StatelessWidget {
         SectionTitle(context.tr('زيارات النشاط', 'Business visits')),
         for (final visit in business.visits)
           VisitScheduleCard(visit: visit, showDate: true),
-        SectionTitle(
-          context.tr(
-            'المحاضر المحفوظة على الجهاز',
-            'Reports saved on this device',
-          ),
-        ),
+        SectionTitle(context.tr('محاضر النشاط', 'Reports for this business')),
         if (reports.isEmpty)
           BrowseEmpty(
             title: context.tr(
-              'لا توجد محاضر محفوظة لهذا النشاط',
-              'No saved reports for this business',
+              'لا توجد محاضر لهذا النشاط',
+              'No reports for this business',
             ),
             description: context.tr(
               'الزيارة المكتملة في العينة لا تنشئ محضرًا وهميًا. افتح زيارة للبدء.',
